@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
             const token = request.headers?.authorization?.split("Bearer ")[1];
         
             try {
-                const payload = await jwt.verify(token, process.env.PRODUCT_KEY_SECRET) as JWTPayload;
+                const payload = await jwt.verify(token, process.env.JSON_TOKEN_KEY) as JWTPayload;
                 const user = await this.prismaService.user.findUnique({
                     where: {
                         id: payload.id
@@ -38,10 +38,12 @@ export class AuthGuard implements CanActivate {
 
                 if(!user) return false;
 
+                
                 if(roles.includes(user.user_type)) return true;
 
                 return false;
             } catch(error) {
+                console.log(error);
                 return false;
             }
 
