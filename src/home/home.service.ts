@@ -77,6 +77,28 @@ export class HomeService {
         const home = await this.prismaService.home.findUnique({
             where: {
                 id
+            },
+            select: {
+                id: true,
+                address: true,
+                city: true,
+                price: true,
+                propertyType: true,
+                numbers_of_bedrooms:  true,
+                numbers_of_bathrooms:  true,
+                images: {
+                    select: {
+                        url: true,
+                    },
+                    take: 1
+                },
+                realtor: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone: true,
+                    }
+                }
             }
         });
 
