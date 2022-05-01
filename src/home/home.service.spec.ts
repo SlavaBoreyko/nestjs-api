@@ -10,16 +10,38 @@ const mockGetHomes = [
     address: "474 Yacht Str",
     city: "New York",
     price: 550000,
-    propertyType: PropertyType.RESIDENTIAL,
+    property_type: PropertyType.RESIDENTIAL,
     image: "/url_image_2",
-    numberOfBedrooms: 4,
-    numberOfBathrooms: 3,
+    number_of_bedrooms: 4,
+    number_of_bathrooms: 3,
     images: [
       {
         url: "src1",
       }
     ]
   }
+]
+
+const mockHome = {
+  id: 2,
+  address: "474 Yacht Str",
+  city: "New York",
+  price: 550000,
+  property_type: PropertyType.RESIDENTIAL,
+  image: "/url_image_2",
+  number_of_bedrooms: 4,
+  number_of_bathrooms: 3
+}
+
+const mockImages = [
+  {
+    id: 1,
+    url: "src1"
+  },
+  {
+    id: 2,
+    url: "src2"
+  },
 ]
 
 describe('HomeService', () => {
@@ -32,7 +54,11 @@ describe('HomeService', () => {
         provide: PrismaService,
         useValue: {
           home: {
-            findMany: jest.fn().mockReturnValue(mockGetHomes)
+            findMany: jest.fn().mockReturnValue(mockGetHomes),
+            create: jest.fn().mockReturnValue(mockHome),
+          },
+          image: {
+            createMany: jest.fn().mockReturnValue(mockImages)
           }
         }
       }],
@@ -94,4 +120,40 @@ describe('HomeService', () => {
       )
     })
   });
+
+  describe('createHome', () => { 
+    const mockCreateHomeParams = {
+      address: "111 Yellow Str",
+      numberOfBedrooms: 2,
+      numberOfBathrooms: 2,
+      city: "Vancouver",
+      price: 560000,
+      land_size:490,
+      propertyType: PropertyType.RESIDENTIAL,
+      images: [{
+        url: "src1"
+      }],
+    }
+
+    it("should call prisma home.create with the correct payload", async () => {
+      const mockCreateHome = jest.fn().mockReturnValue(mockHome)
+
+      jest.spyOn(prismaService.home, "create").mockImplementation(mockCreateHome);
+
+      await service.createHome(mockCreateHomeParams, 1);
+
+      expect(mockCreateHome).toBeCalledWith({
+        data: {
+          address: "111 Yellow Str",
+          numbers_of_bathrooms: 2,
+          numbers_of_bedrooms: 2,
+          city: "Vancouver",
+          price: 560000,
+          land_size:490,
+          propertyType: PropertyType.RESIDENTIAL,
+          realtor_id: 1
+        }
+      })
+    })
+  })
 });
